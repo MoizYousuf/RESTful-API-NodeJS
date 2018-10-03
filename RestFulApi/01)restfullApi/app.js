@@ -4,6 +4,11 @@ const productRouter = require('./api/routes/products');
 const orderRouter = require('./api/routes/orders');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+mongoose.connect("mongodb+srv://MoizYousuf:moizyousuf@nodeshop-hmonh.mongodb.net/test?retryWrites=true", {
+    useNewUrlParser: true
+});
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({
@@ -11,12 +16,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-// app.use((req, res, next) => {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers",
-//         "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-//     res.header("Access-Control-Allow-Methods", "PUT, GET, POST, PATCH, DELETE")
-// })
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    if (req.method === "OPTIONS") {
+        res.header("Access-Control-Allow-Methods", "PUT, GET, POST, PATCH, DELETE");
+        return res.status(200).json({});
+    };
+    next();
+});
 
 app.use('/products', productRouter);
 app.use('/orders', orderRouter);
